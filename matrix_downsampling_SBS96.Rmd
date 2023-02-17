@@ -141,10 +141,113 @@ ds_muts_hist/ds_muts_box
 ```
 
 
+## Wrapper function
+
+The above process is also implemented as a function, using which you can downsample either using a threshold calculated based on the distribution of your data, or using your own custom threshold. This function does not currently produce the plots generated in this script, so I strongly recommend plotting the data yourself before running this to check that this method is suitable.
+
+### Parameters: 
+
+mutation matrix: SBS96 mutation matrix as tab-separated file, in 'SigProfiler' format (see https://github.com/AlexandrovLab/SigProfilerExtractor). The first column should list the 96 mutation types, with the remaining columns corresponding to the raw mutation counts for each sample.
+
+ds_thresh: This function will calculate the threshold for number of mutation calls above which to downsample your samples. However, if you wish to override this calculation and use your own threshold, you can specify it here.
+
+
+### Returns:
+
+Function returns your downsampled mutation matrix.
+In future I would also like to add returning the ds_thresh value calculated, and boxplots and histograms of mutation count distribution before and after downsampling.
+
+### Usage:
+
+Example 1:
+
+```{r eval=FALSE}
+sbs96_downsample(og_matrix)
+```
+
+Downsamples samples from the matrix that are above a threshold calculated based on the distribution of your data
+
+
+Example 2:
+
+```{r eval=FALSE}
+sbs96_downsample(og_matrix, ds_thresh = 5000)
+```
+
+Downsamples samples from the matrix that have over 5000 total mutations.
+
+
+```{r sbs96_downsample function}
+##Note - this should really be implemented by sourcing the matrix_downsampling_SBS96_function.R script, but I'm struggling to get this working without using absolute paths?
+
+#Assign sbs_downsample function
+
+sbs96_downsample <- function(mutation_matrix, ds_thresh=NULL) {
+  
+  #calculate raw mutation totals per sample
+  raw_muts_total <- as.data.frame(colSums(mutation_matrix[,-1]))
+  raw_muts_total <- as.data.frame(cbind(sample = rownames(raw_muts_total), total_muts = raw_muts_total[,1]))
+  raw_muts_total[,2] <- as.numeric(raw_muts_total[,2])
+  
+  #calculate downsampling threshold if not provided
+  if (is.null(ds_thresh)) {
+    quartiles <- quantile(raw_muts_total$total_muts) #calculate quartiles and min/max of the data
+    thresh <- quartiles[4] + 1.5 * (quartiles[4] - quartiles[2])
+    print(paste0("The suggested threshold for downsampling is ", thresh))
+  } else {
+    thresh <- ds_thresh #if threshold provided manually, assign
+  }
+  
+  #identify samples above threshold
+  above_thresh <- filter(raw_muts_total, total_muts > thresh)
+  
+  print(paste0("There are ", as.character(nrow(above_thresh)), " samples to be downsampled, with mutation counts between ", as.character(min(above_thresh$total_muts)), " and ", as.character(max(above_thresh$total_muts))))
+  
+  #calculate downsampling factors
+  above_thresh <- mutate(above_thresh, ds_factor = thresh/total_muts)
+  
+  #init downsampled matrix
+  ds_matrix <- mutation_matrix[,1]
+  
+  #downsample selected samples
+  for (i in 2:ncol(mutation_matrix)) { 
+    if (colnames(mutation_matrix)[i] %in% above_thresh$sample) {
+      print(paste0("Downsampling sample ", colnames(mutation_matrix)[i], "..."))
+      ds_matrix[,i] <- round(mutation_matrix[,i]*above_thresh$ds_factor[above_thresh$sample==colnames(mutation_matrix)[i]], 0)
+    } else {
+      ds_matrix[,i] <- mutation_matrix[,i]
+    }
+  }
+  
+  #return the downsampled matrix
+  return(ds_matrix)
+}
+
+```
+
+We can now use the function to generate the same result as above, or to downsample to a custom threshold of 5000 mutations:
+
+```{r run examples}
+#downsample with custom threshold calculation as above
+ds_matrix <- sbs96_downsample(og_matrix)
+
+#downsample to 5000 mutations
+ds_matrix_5000 <- sbs96_downsample(og_matrix, ds_thresh = 5000)
+```
+
+
+
 ## Output downsampled matrix
 
-Finally, we can output our downsampled matrix.
+Finally, we can output our matrix downsampled to the calculated threshold:
 
-```{r write out matrix}
+```{r write out default calculated thresh matrix}
 write.table(ds_matrix, "/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected_downsampled.tsv")
 ```
+
+And our matrix downsampled to the custom threshold provided:
+
+```{r write out custom thresh matrix}
+write.table(ds_matrix_5000, "/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected_downsampled.tsv")
+```
+
