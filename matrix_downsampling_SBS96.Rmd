@@ -1,0 +1,150 @@
+---
+title: "SBS96 matrix downsampling"
+author: "Ellie Dunstone"
+date: "2023-02-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages, include=FALSE}
+library(tidyverse)
+library(patchwork)
+```
+
+
+## Introduction
+
+This script is for adjusting a mutation matrix so that samples with unusually high numbers of mutation calls are downsampled, avoiding them from over-contributing to a signature extraction process. This is generally only required when you have a large amount of variation in mutation numbers between your samples - e.g. you have both normal samples and tumour samples; tumour samples including hypermutators; or a range of normal samples including highly-mutated tissues like the epidermis.
+
+The exact threshold over which samples will be downsampled is somewhat arbitary; a number of ways of deciding this threshold may work equally well, and the best method may depend on the specifics of your dataset.
+
+It should be noted that changing the absolute number of mutation calls will mean that any statistics generated during your signature extraction process (number of mutations per signature, confidence intervals of signature extractions) will be with reference to your new downsampled input matrix, not the original data. For the number of mutations, this can be corrected using the original matrix counts (or burden estimates if using NanoSeq data). For signature extraction confidence intervals this is not as easy, but these intervals are not widely used and if anything the degree of error will be overestimated, which may not be an issue.
+
+
+## Read in data
+
+First, read in the raw counts of SBS96 mutations. This script was developed using 'SigProfiler' format matrices, so if yours is in a different format it may need some manipulation. The first column should list the 96 mutation types, with the remaining columns corresponding to each sample.
+
+```{r read in matrix, results='hide'}
+#read in your original matrix
+og_matrix <- read_table("/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected.tsv")
+```
+
+
+## Calculate and visualise mutation counts per sample
+
+We now want to calculate the raw number of mutations called per sample.
+
+```{r calculate total raw muts per sample}
+raw_muts_total <- as.data.frame(colSums(og_matrix[,-1]))
+raw_muts_total <- as.data.frame(cbind(sample = rownames(raw_muts_total), total_muts = raw_muts_total[,1]))
+raw_muts_total[,2] <- as.numeric(raw_muts_total[,2])
+```
+
+We can now plot the distribution of the mutation sums.
+
+```{r total muts histogram and bar, out.width="100%"}
+total_muts_hist <- ggplot(raw_muts_total) + 
+  geom_histogram(aes(total_muts), binwidth = 100) + 
+  theme_classic()
+
+total_muts_box <- ggplot(raw_muts_total) + 
+  geom_boxplot(aes(total_muts)) +
+  theme_classic()
+  
+total_muts_hist/total_muts_box
+```
+These plots can be used to determine a sensible threshold for downsampling.
+
+The upper whisker extends from the 75th percentile to the largest value no further than 1.5 * IQR from the 75th percentile (where IQR is the inter-quartile range, or distance between the first and third quartiles). The lower whisker extends from the 25th percentile to the smallest value at most 1.5 * IQR of the 25th percentile. Outliers are plotted individually.
+
+
+## Calculate downsampling threshold
+
+Here, I will downsample outliers to approximately the 75th percentile of the total mutation number + 1.5 * IQR, essentially reducing them to the level of non-outlying samples.
+
+The threshold is calculated as follows:
+
+$$
+Downsampling\ threshold = 75th\ percentile + 1.5*(75th\ percentile - 25th\ percentile)
+$$
+
+```{r calculate threshold}
+quartiles <- quantile(raw_muts_total$total_muts) #calculate quartiles and min/max of the data
+print(quartiles)
+
+thresh <- quartiles[4] + 1.5 * (quartiles[4] - quartiles[2])
+print(paste0("The suggested threshold for downsampling is ", thresh))
+
+```
+
+
+## Identify samples and downsampling factors
+
+We will now identify the samples with total mutation calls above the threshold, and the extent to which they need to be downsampled.
+
+```{r calculate downsampling factors}
+#identify samples above threshold
+above_thresh <- filter(raw_muts_total, total_muts > thresh)
+
+print(paste0("There are ", as.character(nrow(above_thresh)), " samples to be downsampled, with mutation counts between ", as.character(min(above_thresh$total_muts)), " and ", as.character(max(above_thresh$total_muts))))
+
+#calculate downsampling factors
+above_thresh <- mutate(above_thresh, ds_factor = thresh/total_muts)
+```
+
+
+## Downsampling
+
+We will now downsample the identified outliers by simple rescaling of the appropriate columns of the mutation matrix according to the corresponding downsampling factors, followed by rounding to the nearest integer to give simulated count data. You could also achieve a similar effect using multinomial sampling, if you wish to introduce sampling noise while simulating the downsampled samples, but this has not been implemented here.
+
+```{r downsample}
+#init downsampled matrix
+ds_matrix <- og_matrix[,1]
+
+#downsample selected samples
+for (i in 2:ncol(og_matrix)) { 
+  if (colnames(og_matrix)[i] %in% above_thresh$sample) {
+    print(paste0("Downsampling sample ", colnames(og_matrix)[i], "..."))
+    ds_matrix[,i] <- round(og_matrix[,i]*above_thresh$ds_factor[above_thresh$sample==colnames(og_matrix)[i]], 0)
+  } else {
+    ds_matrix[,i] <- og_matrix[,i]
+  }
+}
+```
+
+
+## Check distribution
+
+We now want to check that the new distribution of total mutation counts per sample has changed appropriately.
+
+```{r recalculate muts per sample}
+ds_muts_total <- as.data.frame(colSums(ds_matrix[,-1]))
+ds_muts_total <- as.data.frame(cbind(sample = rownames(ds_muts_total), total_muts = ds_muts_total[,1]))
+ds_muts_total[,2] <- as.numeric(ds_muts_total[,2])
+```
+
+
+```{r ds muts histogram and bar}
+ds_muts_hist <- ggplot(ds_muts_total) + 
+  geom_histogram(aes(total_muts), binwidth = 100) + 
+  theme_classic()
+
+ds_muts_box <- ggplot(ds_muts_total) + 
+  geom_boxplot(aes(total_muts)) +
+  theme_classic()
+  
+ds_muts_hist/ds_muts_box
+```
+
+
+## Output downsampled matrix
+
+Finally, we can output our downsampled matrix.
+
+```{r write out matrix}
+write.table(ds_matrix, "/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected_downsampled.tsv")
+```
