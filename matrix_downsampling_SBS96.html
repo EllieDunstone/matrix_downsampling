@@ -390,7 +390,7 @@ different format it may need some manipulation. The first column should
 list the 96 mutation types, with the remaining columns corresponding to
 each sample.</p>
 <pre class="r"><code>#read in your original matrix
-og_matrix &lt;- read_table(&quot;/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected.tsv&quot;)</code></pre>
+og_matrix &lt;- read_table(&quot;/Users/ed4/Documents/phd/chemo_project/scripts/nanoseq_scripts/nanoseq_output_processing/matrix_downsampling/trint_subs_matrix_corrected.tsv&quot;)</code></pre>
 <pre><code>## 
 ## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
@@ -477,28 +477,28 @@ for (i in 2:ncol(og_matrix)) {
     ds_matrix[,i] &lt;- og_matrix[,i]
   }
 }</code></pre>
-<pre><code>## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38814b_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38814b_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815b_ds0003...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815l_ds0003...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815q_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815q_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850q_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850q_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850r_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850r_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851c_ds0004...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851q_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851q_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851w_ds0004...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD48378g_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD48378g_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199u_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199u_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199v_ds0003...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199v_ds0004...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD56387c_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD56387c_ds0002...&quot;</code></pre>
+<pre><code>## [1] &quot;Downsampling sample S1...&quot;
+## [1] &quot;Downsampling sample S2...&quot;
+## [1] &quot;Downsampling sample S14...&quot;
+## [1] &quot;Downsampling sample S22...&quot;
+## [1] &quot;Downsampling sample S27...&quot;
+## [1] &quot;Downsampling sample S28...&quot;
+## [1] &quot;Downsampling sample S55...&quot;
+## [1] &quot;Downsampling sample S56...&quot;
+## [1] &quot;Downsampling sample S57...&quot;
+## [1] &quot;Downsampling sample S58...&quot;
+## [1] &quot;Downsampling sample S83...&quot;
+## [1] &quot;Downsampling sample S95...&quot;
+## [1] &quot;Downsampling sample S96...&quot;
+## [1] &quot;Downsampling sample S99...&quot;
+## [1] &quot;Downsampling sample S102...&quot;
+## [1] &quot;Downsampling sample S103...&quot;
+## [1] &quot;Downsampling sample S166...&quot;
+## [1] &quot;Downsampling sample S167...&quot;
+## [1] &quot;Downsampling sample S170...&quot;
+## [1] &quot;Downsampling sample S171...&quot;
+## [1] &quot;Downsampling sample S279...&quot;
+## [1] &quot;Downsampling sample S280...&quot;</code></pre>
 </div>
 <div id="check-distribution" class="section level2">
 <h2>Check distribution</h2>
@@ -604,37 +604,37 @@ to downsample to a custom threshold of 5000 mutations:</p>
 ds_matrix &lt;- sbs96_downsample(og_matrix)</code></pre>
 <pre><code>## [1] &quot;The suggested threshold for downsampling is 2286.5&quot;
 ## [1] &quot;There are 22 samples to be downsampled, with mutation counts between 2363 and 30778&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38814b_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38814b_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815b_ds0003...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815l_ds0003...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815q_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815q_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850q_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850q_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850r_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850r_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851c_ds0004...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851q_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851q_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43851w_ds0004...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD48378g_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD48378g_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199u_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199u_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199v_ds0003...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD53199v_ds0004...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD56387c_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD56387c_ds0002...&quot;</code></pre>
+## [1] &quot;Downsampling sample S1...&quot;
+## [1] &quot;Downsampling sample S2...&quot;
+## [1] &quot;Downsampling sample S14...&quot;
+## [1] &quot;Downsampling sample S22...&quot;
+## [1] &quot;Downsampling sample S27...&quot;
+## [1] &quot;Downsampling sample S28...&quot;
+## [1] &quot;Downsampling sample S55...&quot;
+## [1] &quot;Downsampling sample S56...&quot;
+## [1] &quot;Downsampling sample S57...&quot;
+## [1] &quot;Downsampling sample S58...&quot;
+## [1] &quot;Downsampling sample S83...&quot;
+## [1] &quot;Downsampling sample S95...&quot;
+## [1] &quot;Downsampling sample S96...&quot;
+## [1] &quot;Downsampling sample S99...&quot;
+## [1] &quot;Downsampling sample S102...&quot;
+## [1] &quot;Downsampling sample S103...&quot;
+## [1] &quot;Downsampling sample S166...&quot;
+## [1] &quot;Downsampling sample S167...&quot;
+## [1] &quot;Downsampling sample S170...&quot;
+## [1] &quot;Downsampling sample S171...&quot;
+## [1] &quot;Downsampling sample S279...&quot;
+## [1] &quot;Downsampling sample S280...&quot;</code></pre>
 <pre class="r"><code>#downsample to 5000 mutations
 ds_matrix_5000 &lt;- sbs96_downsample(og_matrix, ds_thresh = 5000)</code></pre>
 <pre><code>## [1] &quot;There are 6 samples to be downsampled, with mutation counts between 5682 and 30778&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38814b_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38814b_ds0002...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD38815b_ds0003...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850q_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD43850r_ds0001...&quot;
-## [1] &quot;Downsampling sample all_trint_subs_obs_corrected/PD48378g_ds0002...&quot;</code></pre>
+## [1] &quot;Downsampling sample S1...&quot;
+## [1] &quot;Downsampling sample S2...&quot;
+## [1] &quot;Downsampling sample S14...&quot;
+## [1] &quot;Downsampling sample S55...&quot;
+## [1] &quot;Downsampling sample S57...&quot;
+## [1] &quot;Downsampling sample S103...&quot;</code></pre>
 </div>
 </div>
 <div id="output-downsampled-matrix" class="section level2">

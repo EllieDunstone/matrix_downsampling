@@ -30,7 +30,7 @@ First, read in the raw counts of SBS96 mutations. This script was developed usin
 
 ```{r read in matrix, results='hide'}
 #read in your original matrix
-og_matrix <- read_table("/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected.tsv")
+og_matrix <- read_table("/Users/ed4/Documents/phd/chemo_project/scripts/nanoseq_scripts/nanoseq_output_processing/matrix_downsampling/trint_subs_matrix_corrected.tsv")
 ```
 
 
