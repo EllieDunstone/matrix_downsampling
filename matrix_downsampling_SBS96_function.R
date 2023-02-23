@@ -4,7 +4,7 @@
 
 ## Params: 
 
-#mutation matrix - sbs96 mutation matrix as tab-separated file, in 'SigProfiler' format (see https://github.com/AlexandrovLab/SigProfilerExtractor). The first column should list the 96 mutation types, with the remaining columns corresponding to the raw mutation counts for each sample.
+#mutation matrix - sbs96 mutation matrix or dataframe in 'SigProfiler' format (see https://github.com/AlexandrovLab/SigProfilerExtractor). The first column should list the 96 mutation types, with the remaining columns corresponding to the raw mutation counts for each sample.
 
 #ds_thresh - this function will calculate the threshold for number of mutation calls above which to downsample your samples. However, if you wish to override this calculation and use your own threshold, you can specify it here.
 
