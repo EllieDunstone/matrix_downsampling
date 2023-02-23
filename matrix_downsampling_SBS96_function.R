@@ -53,7 +53,7 @@ sbs96_downsample <- function(mutation_matrix, ds_thresh=NULL) {
   for (i in 2:ncol(mutation_matrix)) { 
     if (colnames(mutation_matrix)[i] %in% above_thresh$sample) {
       print(paste0("Downsampling sample ", colnames(mutation_matrix)[i], "..."))
-      ds_matrix[,i] <- round(mutation_matrix[,i]*above_thresh$ds_factor[above_thresh$sample==colnames(mutation_matrix)[i]], 0)
+      ds_matrix[,i] <- round(mutation_matrix[,i]*above_thresh$ds_factor[above_thresh$sample==colnames(mutation_matrix)[i]])
     } else {
       ds_matrix[,i] <- mutation_matrix[,i]
     }

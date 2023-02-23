@@ -109,7 +109,7 @@ ds_matrix <- og_matrix[,1]
 for (i in 2:ncol(og_matrix)) { 
   if (colnames(og_matrix)[i] %in% above_thresh$sample) {
     print(paste0("Downsampling sample ", colnames(og_matrix)[i], "..."))
-    ds_matrix[,i] <- round(og_matrix[,i]*above_thresh$ds_factor[above_thresh$sample==colnames(og_matrix)[i]], 0)
+    ds_matrix[,i] <- round(og_matrix[,i]*above_thresh$ds_factor[above_thresh$sample==colnames(og_matrix)[i]])
   } else {
     ds_matrix[,i] <- og_matrix[,i]
   }
