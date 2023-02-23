@@ -41,7 +41,7 @@ sbs96_downsample <- function(mutation_matrix, ds_thresh=NULL) {
   #identify samples above threshold
   above_thresh <- filter(raw_muts_total, total_muts > thresh)
   
-  print(paste0("There are ", as.character(nrow(above_thresh)), " samples to be downsampled, with mutation counts between ", as.character(min(above_thresh$total_muts)), " and ", as.character(max(above_thresh$total_muts))))
+  print(paste0("There are ", nrow(above_thresh), " samples to be downsampled, with mutation counts between ", min(above_thresh$total_muts), " and ", max(above_thresh$total_muts)))
   
   #calculate downsampling factors
   above_thresh <- mutate(above_thresh, ds_factor = thresh/total_muts)
