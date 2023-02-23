@@ -248,6 +248,6 @@ write.table(ds_matrix, "/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/pa
 And our matrix downsampled to the custom threshold provided:
 
 ```{r write out custom thresh matrix}
-write.table(ds_matrix_5000, "/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected_downsampled.tsv")
+write.table(ds_matrix_5000, "/Users/ed4/Documents/phd/chemo_project/BotSeq/panbody/panbody_20230106/data/trint_subs_matrix_corrected_downsampled_5000.tsv")
 ```
 
